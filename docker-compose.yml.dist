@@ -1,0 +1,27 @@
+data:
+  image: tianon/true
+  volumes:
+    - ./data/mysql:/var/lib/mysql
+    - ./data/redmine/files:/usr/src/redmine/files
+    - ./data/redmine/log:/usr/src/redmine/log
+    - ./data/redmine/plugins:/usr/src/redmine/plugins:ro
+    - ./data/redmine/theme:/usr/src/redmine/public/themes/chouette-coop:ro
+
+mysql:
+  image: mysql:5.5
+  environment:
+    - MYSQL_ROOT_PASSWORD=root
+    - MYSQL_DATABASE=redmine
+    - MYSQL_USER=redmine
+    - MYSQL_PASSWORD=password
+  volumes_from:
+    - data
+
+redmine:
+  image: redmine:3.0.5
+  links:
+    - mysql
+  environment:
+    - VIRTUAL_HOST=gestion.lachouettecoop.test
+  volumes_from:
+    - data

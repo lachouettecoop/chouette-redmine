@@ -1,0 +1,4 @@
+docker-compose.yml
+data/mysql/
+data/redmine/files
+data/redmine/log
