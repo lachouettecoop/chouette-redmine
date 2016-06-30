@@ -18,7 +18,7 @@ mysql:
     - data
 
 redmine:
-  image: redmine:3.0.5-passenger
+  build: ./docker
   links:
     - mysql
   environment:
