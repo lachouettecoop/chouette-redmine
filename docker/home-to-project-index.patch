@@ -1,0 +1,12 @@
+diff -uwr a/config/routes.rb b/config/routes.rb
+--- a/config/routes.rb	2015-09-20 08:20:45.000000000 +0200
++++ b/config/routes.rb	2017-03-24 23:03:31.713642401 +0100
+@@ -16,7 +16,7 @@
+ # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ 
+ Rails.application.routes.draw do
+-  root :to => 'welcome#index', :as => 'home'
++  root :to => 'projects#index', :as => 'home'
+ 
+   match 'login', :to => 'account#login', :as => 'signin', :via => [:get, :post]
+   match 'logout', :to => 'account#logout', :as => 'signout', :via => [:get, :post]
