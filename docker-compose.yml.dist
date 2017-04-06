@@ -5,12 +5,9 @@ data:
     - ./data/redmine/files:/usr/src/redmine/files
     - ./data/redmine/log:/usr/src/redmine/log
     - ./data/redmine/theme:/usr/src/redmine/public/themes/chouette-coop:ro
-#    - ./data/redmine/plugins:/usr/src/redmine/plugins:ro
-    - ./data/redmine/plugins/mega_calendar:/usr/src/redmine/plugins/mega_calendar:ro
-    - ./data/redmine/plugins/redmine_ldap_sync:/usr/src/redmine/plugins/redmine_ldap_sync:ro
-    - ./data/redmine/plugins/redmine_base_deface/:/usr/src/redmine/plugins/redmine_base_deface/:ro
-    - ./data/redmine/plugins/redmine_multiprojects_issue//:/usr/src/redmine/plugins/redmine_multiprojects_issue//:ro
-
+    - ./data/redmine/configuration.yml:/usr/src/redmine/config/configuration.yml:ro
+    - ./data/redmine/plugins/post-install.sh:/usr/src/redmine/plugins/post-install.sh:ro
+    - ./data/redmine/plugins/scrum/config/locales/fr.yml:/usr/src/redmine/plugins/scrum/config/locales/fr.yml:ro
 
 mysql:
   image: mysql:5.5
@@ -24,6 +21,10 @@ mysql:
 
 redmine:
   build: ./docker
+#  log_driver: syslog
+#  log_opt:
+#    syslog-facility: user
+#    syslog-tag: "{{.ImageName}}/{{.Name}}"
   links:
     - mysql
   environment:
