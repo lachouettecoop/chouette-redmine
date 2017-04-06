@@ -7,7 +7,7 @@ data:
     - ./data/redmine/theme:/usr/src/redmine/public/themes/chouette-coop:ro
     - ./data/redmine/configuration.yml:/usr/src/redmine/config/configuration.yml:ro
     - ./data/redmine/plugins/post-install.sh:/usr/src/redmine/plugins/post-install.sh:ro
-    - ./data/redmine/plugins/scrum/config/locales/fr.yml:/usr/src/redmine/plugins/scrum/config/locales/fr.yml:ro
+    - ./data/redmine/plugins/scrum/config/locales/:/usr/src/redmine/plugins/scrum/config/locales/:ro
 
 mysql:
   image: mysql:5.5
