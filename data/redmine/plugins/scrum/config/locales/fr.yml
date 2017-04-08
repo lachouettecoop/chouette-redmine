@@ -42,7 +42,7 @@ fr:
   label_estimated_effort_tooltip: "Effort estimé (%{date}): %{hours} h"
   label_estimated_vs_done_effort: "Effort estimé vs effort réalisé"
   label_exit_fullscreen: "Sortir du mode plein-écran"
-  label_filter_by_assignee: "Filtre par personne assignée"
+  label_filter_by_assignee: "Filtre par personne"
   label_fullscreen: "Plein-écran"
   label_hours_per_story_point: "Nombre d'heures par point"
   label_invalid_dependencies: "Il existe des dépendances invalides pour les objectifs suivants:"

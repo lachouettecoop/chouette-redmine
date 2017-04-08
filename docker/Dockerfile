@@ -1,11 +1,14 @@
 FROM redmine:3.3.2-passenger
 
+# Permettre au module Apache passenger de compiler sa lib native,
+# dans le répertoire /home/redmine:
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         libmysqlclient-dev  build-essential \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /home/redmine && chown redmine /home/redmine
 
-# Installation de la commande git
+# Installation de la commande git utilisée plus loin dans ce fichier:
 RUN apt-get update \
     && apt-get install -y --no-install-recommends git \
     && rm -rf /var/lib/apt/lists/*
@@ -34,8 +37,11 @@ RUN cd /usr/src/redmine/plugins/ \
 
 # Installation du plugin scrum (backlog, sprint)
 # http://www.redmine.org/plugins/scrum-plugin
+# sed pour changer la couleur rose en encore plus pastelle et rendre le texte plus lisible.
 RUN cd /usr/src/redmine/plugins/ \
-    && (wget -q -O - "https://redmine.ociotec.com/attachments/download/440/scrum%20v0.16.2.tar.gz" | tar zx)
+    && (wget -q -O - "https://redmine.ociotec.com/attachments/download/440/scrum%20v0.16.2.tar.gz" | tar zx) \
+    && sed -i -e "s/#F7D6FF/#FAEAFF/g" -e "s/#E9B1FF/#F0D1FF/g" scrum/assets/stylesheets/scrum.css 
+
 
 # Apply patch so that:
 # - default / page will list projects
