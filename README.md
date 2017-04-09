@@ -10,6 +10,13 @@ utilisez le site !*
 * récupérer le projet (`git clone`)
 * avoir [Docker](http://docs.docker.com/) et [Docker Compose](http://docs.docker.com/compose/install/) installé
 
+## Configuration
+
+* Créer un fichier `docker-compose.yml` à partir de la version `.dist`.
+  Y modifier les sections `environment:`.
+* Idem pour le fichier `data/redmine/configuration.yml` pour parametrer l'envoie d'emails.
+
+
 ## Utilisation
 
 Pour lancer l'application exécutez simplement la commande :

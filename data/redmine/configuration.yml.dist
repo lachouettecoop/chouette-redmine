@@ -9,10 +9,10 @@
 
 production:
   email_delivery:
-    delivery_method:
+    delivery_method: :smtp
     smtp_settings:
-      address:
-      port:
+      address: X.X.X.X
+      port: 25
       domain:
       authentication:
       user_name:
