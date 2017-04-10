@@ -11,6 +11,7 @@ a.cke_toolbox_collapser{
   height:16px;
 }
 .cke_toolbox_collapser.cke_toolbox_collapser_min{
+  float:left;
   width:16px;
   height:16px;
   background: url('icons.png?t=G6DE') no-repeat 0 -408px !important;
