@@ -7,18 +7,16 @@ This is done by adding the folowing at the end of editor*.css:
 
 ```css
 a.cke_toolbox_collapser{
-  width:16px;
+  width:36px;
   height:16px;
+  cursor:pointer !important;
 }
 .cke_toolbox_collapser.cke_toolbox_collapser_min{
   float:left;
-  width:16px;
-  height:16px;
-  background: url('icons.png?t=G6DE') no-repeat 0 -408px !important;
-  background-size:auto;
+  cursor:pointer !important;
 }
 .cke_toolbox_collapser.cke_toolbox_collapser_min .cke_arrow{
-  opacity: 0;
+  cursor:pointer !important;
 }
 ```
 
