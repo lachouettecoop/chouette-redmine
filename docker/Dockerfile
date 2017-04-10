@@ -26,7 +26,7 @@ RUN cd /usr/src/redmine/plugins/ \
     && git clone https://github.com/jbbarth/redmine_base_deface.git \
     && cd redmine_base_deface \
     && git checkout e31dd251f859081545c0e00c4af63de047fa99bc \
-    &&  (echo "source 'https://rubygems.org'" >> Gemfile) \
+    && (echo "source 'https://rubygems.org'" >> Gemfile) \
     && bundle install
 
 # Installation du plugin redmine_multiprojects_issue
@@ -37,11 +37,10 @@ RUN cd /usr/src/redmine/plugins/ \
 
 # Installation du plugin scrum (backlog, sprint)
 # http://www.redmine.org/plugins/scrum-plugin
-# sed pour changer la couleur rose en encore plus pastelle et rendre le texte plus lisible.
+# sed pour changer les couleurs en plus claire et rendre le texte plus lisible.
 RUN cd /usr/src/redmine/plugins/ \
     && (wget -q -O - "https://redmine.ociotec.com/attachments/download/440/scrum%20v0.16.2.tar.gz" | tar zx) \
-    && sed -i -e "s/#F7D6FF/#FAEAFF/g" -e "s/#E9B1FF/#F0D1FF/g" scrum/assets/stylesheets/scrum.css 
-
+    && sed -i -e "s/#F7D6FF/#FAEAFF/g" -e "s/#E9B1FF/#F0D1FF/g" -e "s/#C4FFCA/#E2FFE5/g" -e "s/#9CFFA4/#CEFFD2/g" -e "s/#C8E7FF/#E4F3FF/g" -e "s/#A3BFD7/#D1DFEB/g" -e "s/#FFCCF3/#FFE6F9/g" -e "s/#FFA4E5/#FFD2F2/g" scrum/assets/stylesheets/scrum.css
 
 # Apply patch so that:
 # - default / page will list projects
