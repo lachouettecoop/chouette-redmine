@@ -42,6 +42,27 @@ RUN cd /usr/src/redmine/plugins/ \
     && (wget -q -O - "https://redmine.ociotec.com/attachments/download/440/scrum%20v0.16.2.tar.gz" | tar zx) \
     && sed -i -e "s/#F7D6FF/#FAEAFF/g" -e "s/#E9B1FF/#F0D1FF/g" -e "s/#C4FFCA/#E2FFE5/g" -e "s/#9CFFA4/#CEFFD2/g" -e "s/#C8E7FF/#E4F3FF/g" -e "s/#A3BFD7/#D1DFEB/g" -e "s/#FFCCF3/#FFE6F9/g" -e "s/#FFA4E5/#FFD2F2/g" scrum/assets/stylesheets/scrum.css
 
+# Installation du plugin ckeditor pour avoir un éditeur WYSIWIG
+# https://github.com/a-ono/redmine_ckeditor
+# Supprime la dépendance Gemfile vers sprockets-rails à cause du conflit de version.
+# Install le programme pandoc pour pouvoir migrer la base vers HTML
+# Commande a exécuter pour la migration de la base vers le format HTML:
+#     bundle exec rake redmine_ckeditor:migrate RAILS_ENV=production FROM=textile TO=html
+# Configuration de Redmine
+#     Administration/Configuration/Général/Formatage du texte = Ckeditor
+# Configuration du plugin CKEditor:
+#     Skin: moono-modifie
+RUN cd /usr/src/redmine/plugins/ \
+    && (wget -q -O - "https://github.com/a-ono/redmine_ckeditor/archive/1.1.4.tar.gz" | tar zx) \
+    && mv redmine_ckeditor-1.1.4 redmine_ckeditor \
+    && cd redmine_ckeditor \
+    && sed -i "s/.*sprockets-rails.*/source 'https:\/\/rubygems.org'/" Gemfile \
+    && bundle install \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends pandoc \
+    && rm -rf /var/lib/apt/lists/*
+
+
 # Apply patch so that:
 # - default / page will list projects
 # - listed project links will jump to their wiki page

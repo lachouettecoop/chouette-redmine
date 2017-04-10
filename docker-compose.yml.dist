@@ -8,6 +8,7 @@ data:
     - ./data/redmine/configuration.yml:/usr/src/redmine/config/configuration.yml:ro
     - ./data/redmine/plugins/post-install.sh:/usr/src/redmine/plugins/post-install.sh:ro
     - ./data/redmine/plugins/scrum/config/locales/fr.yml:/usr/src/redmine/plugins/scrum/config/locales/fr.yml:ro
+    - ./data/redmine/plugins/redmine_ckeditor/assets/ckeditor-contrib/skins/moono-modifie:/usr/src/redmine/plugins/redmine_ckeditor/assets/ckeditor-contrib/skins/moono-modifie
 
 mysql:
   image: mysql:5.5
