@@ -14,7 +14,7 @@ utilisez le site !*
 
 * Créer un fichier `docker-compose.yml` à partir de la version `.dist`.
   Y modifier les sections `environment:`.
-* Idem pour le fichier `data/redmine/configuration.yml` pour parametrer l'envoie d'emails.
+* (optionel) Idem pour le fichier `data/redmine/configuration.yml` pour parametrer l'envoie d'emails.
 
 
 ## Utilisation

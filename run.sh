@@ -13,13 +13,11 @@ case $1 in
         docker exec -it $REDMINE_CONTAINER $*
         ;;
     mysql|mysqldump|mysqlrestore)
-        if [ $1 = mysqlrestore ] ; then
-            cmd=mysql
-            option="-i"
-        else
-            cmd=$1
-            option="-it"
-        fi
+        case $1 in
+            mysql)        cmd=mysql;     option="-it";;
+            mysqldump)    cmd=mysqldump; option=     ;;
+            mysqlrestore) cmd=mysql;     option="-i" ;;
+        esac
         MYSQL_CONTAINER=`docker-compose ps |grep _mysql_ |cut -d" " -f1`
         MYSQL_PASSWORD=`grep MYSQL_PASSWORD docker-compose.yml|cut -d= -f2`
         docker exec $option $MYSQL_CONTAINER $cmd --user=redmine --password=$MYSQL_PASSWORD redmine
