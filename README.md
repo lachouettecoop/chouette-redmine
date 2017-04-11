@@ -22,7 +22,7 @@ utilisez le site !*
 Pour lancer l'application exécutez simplement la commande :
 
 ```
-docker-compose up -d
+./run.sh
 ```
 
 ### Bonus
