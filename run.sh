@@ -4,9 +4,17 @@ cd `dirname $0` || exit -1
 
 case $1 in
     "")
+        docker-compose up -d
+        ;;
+    init)
         test -e docker-compose.yml || cp docker-compose.yml.dist docker-compose.yml
         test -e data/redmine/configuration.yml || cp data/redmine/configuration.yml.dist data/redmine/configuration.yml
-        docker-compose up -d
+        docker-compose run mysql  chown -R mysql:mysql /var/lib/mysql
+        docker-compose run redmine chown -R redmine:redmine log files public/system/rich
+        ;;
+    post-install)
+        REDMINE_CONTAINER=`docker-compose ps |grep _redmine_ |cut -d" " -f1`
+        docker exec -it $REDMINE_CONTAINER plugins/post-install.sh
         ;;
     bash)
         REDMINE_CONTAINER=`docker-compose ps |grep _redmine_ |cut -d" " -f1`
@@ -28,14 +36,16 @@ case $1 in
     *)
         cat <<HELP
 Utilisation : $0 [COMMANDE]
-               : lance les containers
-  bash         : lance bash sur le container redmine
-  mysql        : lance mysql sur le container mysql, en mode interactif
-  mysqldump    : lance mysqldump sur le container mysql
+  init         : initialise
+               : lance les conteneurs
+  post-install : a exécuter après une mise à jour
+  bash         : lance bash sur le conteneur redmine
+  mysql        : lance mysql sur le conteneur mysql, en mode interactif
+  mysqldump    : lance mysqldump sur le conteneur mysql
   mysqlrestore : permet de rediriger un dump vers la commande mysql
-  stop         : stop les containers
-  rm           : efface les containers
-  logs         : affiche les logs du container
+  stop         : stoppe les conteneurs
+  rm           : efface les conteneurs
+  logs         : affiche les logs des conteneurs
 HELP
         ;;
 esac

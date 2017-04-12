@@ -19,9 +19,10 @@ utilisez le site !*
 
 ## Utilisation
 
-Pour lancer l'application exécutez simplement la commande :
+Pour lancer l'application exécutez simplement les commandes :
 
 ```
+./run.sh init
 ./run.sh
 ```
 
