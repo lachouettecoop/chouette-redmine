@@ -7,8 +7,8 @@ This is done by adding the folowing at the end of editor*.css:
 
 ```css
 a.cke_toolbox_collapser{
-  width:36px;
-  height:16px;
+  width:20px;
+  height:11px;
   cursor:pointer !important;
 }
 .cke_toolbox_collapser.cke_toolbox_collapser_min{
