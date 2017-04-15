@@ -3,7 +3,7 @@
 # Intall plugins' ruby dependencies (Gemfile):
 (cd /usr/src/redmine/plugins &&
 for d in */; do
-    cd "$d" && test -f Gemfile && (bundle install || exit -1);
+    (cd "$d" && test -f Gemfile && (bundle install2 || exit -1));
 done)
 
 # Modification de droits d'accès spécialement pour 

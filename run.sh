@@ -3,6 +3,12 @@
 set -e
 cd `dirname $0`
 
+function container_full_name() {
+    # workaround for docker-compose ps: https://github.com/docker/compose/issues/1513
+    echo `docker inspect -f '{{if .State.Running}}{{.Name}}{{end}}' \
+            $(docker-compose ps -q) | cut -d/ -f2 | grep $1`
+}
+
 case $1 in
     "")
         docker-compose up -d
@@ -28,11 +34,11 @@ case $1 in
         $0
         echo "Attente de 5s..."
         sleep 5
-        REDMINE_CONTAINER=`docker-compose ps |grep _redmine_ |cut -d" " -f1`
+        REDMINE_CONTAINER=`container_full_name _redmine_`
         docker exec -it $REDMINE_CONTAINER plugins/post-install.sh
         ;;
     bash)
-        REDMINE_CONTAINER=`docker-compose ps |grep _redmine_ |cut -d" " -f1`
+        REDMINE_CONTAINER=`container_full_name _redmine_`
         docker exec -it $REDMINE_CONTAINER $*
         ;;
     mysql|mysqldump|mysqlrestore)
@@ -41,7 +47,7 @@ case $1 in
             mysqldump)    cmd=mysqldump; option=     ;;
             mysqlrestore) cmd=mysql;     option="-i" ;;
         esac
-        MYSQL_CONTAINER=`docker-compose ps |grep _mysql_ |cut -d" " -f1`
+        MYSQL_CONTAINER=`container_full_name _mysql_`
         MYSQL_PASSWORD=`grep MYSQL_PASSWORD docker-compose.yml|cut -d= -f2`
         docker exec $option $MYSQL_CONTAINER $cmd --user=redmine --password=$MYSQL_PASSWORD redmine
         ;;
