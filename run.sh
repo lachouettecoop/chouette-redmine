@@ -20,7 +20,7 @@ case $1 in
         docker-compose run --rm redmine chown -R redmine:redmine log files public/system/rich
         ;;
     upgrade)
-        read -rp "Êtes-vous sûr de vouloir effacer et mettre à jour les images et conteneurs Docker ? (o/n)"
+        read -rp "Êtes-vous sûr de vouloir mettre à jour les images et conteneurs Docker ? (o/n)"
         if [[ $REPLY =~ ^[oO]$ ]] ; then
             docker-compose pull
             docker-compose build
@@ -36,6 +36,18 @@ case $1 in
         sleep 5
         REDMINE_CONTAINER=`container_full_name _redmine_`
         docker exec -it $REDMINE_CONTAINER plugins/post-install.sh
+        $0
+        ;;
+    prune)
+        read -rp "Êtes-vous sûr de vouloir effacer les conteneurs et images Docker innutilisés ? (o/n)"
+        if [[ $REPLY =~ ^[oO]$ ]] ; then
+            # Note: la commande docker system prune n'est pas dispo sur les VPS OVH
+            # http://stackoverflow.com/questions/32723111/how-to-remove-old-and-unused-docker-images/32723285
+            exited_containers=$(docker ps -qa --no-trunc --filter "status=exited")
+            test "$exited_containers" != ""  && docker rm $exited_containers
+            dangling_images=$(docker images --filter "dangling=true" -q --no-trunc)
+            test "$dangling_images" != "" && docker rmi $dangling_images
+        fi
         ;;
     bash)
         REDMINE_CONTAINER=`container_full_name _redmine_`
@@ -61,6 +73,7 @@ Utilisation : $0 [COMMANDE]
                : lance les conteneurs
   update       : a exécuter après une mise à jour
   upgrade      : met à jour les images et les conteneurs Docker
+  prune        : efface les conteneurs et images Docker inutilisés
   bash         : lance bash sur le conteneur redmine
   mysql        : lance mysql sur le conteneur mysql, en mode interactif
   mysqldump    : lance mysqldump sur le conteneur mysql
