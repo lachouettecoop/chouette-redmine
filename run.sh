@@ -26,11 +26,11 @@ case $1 in
             docker-compose build
             docker-compose stop
             docker-compose rm -f
-            $0 init
             $0 update
         fi
         ;;
     update)
+        $0 init
         $0
         echo "Attente de 5s..."
         sleep 5
