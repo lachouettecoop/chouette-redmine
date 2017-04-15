@@ -1,6 +1,7 @@
 #!/bin/bash
 
-cd `dirname $0` || exit -1
+set -e
+cd `dirname $0`
 
 case $1 in
     "")
@@ -9,10 +10,24 @@ case $1 in
     init)
         test -e docker-compose.yml || cp docker-compose.yml.dist docker-compose.yml
         test -e data/redmine/configuration.yml || cp data/redmine/configuration.yml.dist data/redmine/configuration.yml
-        docker-compose run mysql  chown -R mysql:mysql /var/lib/mysql
-        docker-compose run redmine chown -R redmine:redmine log files public/system/rich
+        docker-compose run --rm mysql chown -R mysql:mysql /var/lib/mysql
+        docker-compose run --rm redmine chown -R redmine:redmine log files public/system/rich
         ;;
-    post-install)
+    upgrade)
+        read -rp "Êtes-vous sûr de vouloir effacer et mettre à jour les images et conteneurs Docker ? (o/n)"
+        if [[ $REPLY =~ ^[oO]$ ]] ; then
+            docker-compose pull
+            docker-compose build
+            docker-compose stop
+            docker-compose rm -f
+            $0 init
+            $0 update
+        fi
+        ;;
+    update)
+        $0
+        echo "Attente de 5s..."
+        sleep 5
         REDMINE_CONTAINER=`docker-compose ps |grep _redmine_ |cut -d" " -f1`
         docker exec -it $REDMINE_CONTAINER plugins/post-install.sh
         ;;
@@ -36,9 +51,10 @@ case $1 in
     *)
         cat <<HELP
 Utilisation : $0 [COMMANDE]
-  init         : initialise
+  init         : initialise les données
                : lance les conteneurs
-  post-install : a exécuter après une mise à jour
+  update       : a exécuter après une mise à jour
+  upgrade      : met à jour les images et les conteneurs Docker
   bash         : lance bash sur le conteneur redmine
   mysql        : lance mysql sur le conteneur mysql, en mode interactif
   mysqldump    : lance mysqldump sur le conteneur mysql
