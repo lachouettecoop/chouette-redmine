@@ -81,7 +81,7 @@ case $1 in
             mysqldump)    cmd=mysqldump; option=     ;;
             mysqlrestore) cmd=mysql;     option="-i" ;;
         esac
-        MYSQL_CONTAINER=`container_full_name _mysql_`
+        MYSQL_CONTAINER=`container_full_name mysql`
         MYSQL_PASSWORD=`grep MYSQL_PASSWORD docker-compose.yml|cut -d= -f2`
         docker exec $option $MYSQL_CONTAINER $cmd --user=redmine --password=$MYSQL_PASSWORD redmine
         ;;

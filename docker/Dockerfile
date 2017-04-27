@@ -61,6 +61,9 @@ RUN cd /usr/src/redmine/plugins/ \
     && apt-get update \
     && apt-get install -y --no-install-recommends pandoc \
     && rm -rf /var/lib/apt/lists/*
+# Les images incluses dans les documents CKEditor grace à son extension  rcich
+# seront stockées dans le répertore /usr/src/redmine/public/system/rich"]
+VOLUME ["/usr/src/redmine/public/system/rich"]
 
 
 # Apply patch so that:
