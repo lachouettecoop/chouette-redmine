@@ -4,28 +4,35 @@ set -e
 cd `dirname $0`
 
 function container_full_name() {
+    # Retourne le nom complet du coneneur $1 si il est en cours d'exécution
     # workaround for docker-compose ps: https://github.com/docker/compose/issues/1513
-    echo `docker inspect -f '{{if .State.Running}}{{.Name}}{{end}}' \
-            $(docker-compose ps -q) | cut -d/ -f2 | grep _${1}_`
+    ids=$(docker-compose ps -q)
+    if [ "$ids" != "" ] ; then
+        echo `docker inspect -f '{{if .State.Running}}{{.Name}}{{end}}' $ids \
+              | cut -d/ -f2 | grep -E "_${1}_[0-9]"`
+    fi
 }
 
 function dc_dockerfiles_images() {
-    DOCKERFILES=`grep -E '^\s*build:' docker-compose.yml|cut -d: -f2 |sed 's/\s*\([^ ]*\)\s*/\1\/Dockerfile/'`
-    for dockerfile in $DOCKERFILES; do
-        echo `grep "^FROM " $dockerfile |cut -d' ' -f2`
+    # Retourne la liste d'images Docker depuis les Dockerfile build listés dans docker-compose.yml
+    local DOCKERDIRS=`grep -E '^\s*build:' docker-compose.yml|cut -d: -f2 |xargs`
+    local dockerdir
+    for dockerdir in $DOCKERDIRS; do
+        echo `grep "^FROM " ${dockerdir}/Dockerfile |cut -d' ' -f2|xargs`
     done
 }
 
 function dc_exec_or_run() {
-    CONTAINER_SHORT_NAME=$1
-    CONTAINER_FULL_NAME=`container_full_name ${CONTAINER_SHORT_NAME}`
+    # Lance la commande $2 dans le container $1, avec 'exec' ou 'run' selon si le conteneur est déjà lancé ou non
+    local CONTAINER_SHORT_NAME=$1
+    local CONTAINER_FULL_NAME=`container_full_name ${CONTAINER_SHORT_NAME}`
     shift
     if test -n "$CONTAINER_FULL_NAME" ; then
         # container already started
-        docker exec -it $CONTAINER_FULL_NAME $*
+        docker exec -it $CONTAINER_FULL_NAME "$@"
     else
         # container not started
-        docker-compose run --rm $CONTAINER_SHORT_NAME $*
+        docker-compose run --rm $CONTAINER_SHORT_NAME "$@"
     fi
 }
 
@@ -73,7 +80,7 @@ case $1 in
         fi
         ;;
     bash)
-        dc_exec_or_run redmine $*
+        dc_exec_or_run redmine "$@"
         ;;
     mysql|mysqldump|mysqlrestore)
         case $1 in
@@ -82,11 +89,18 @@ case $1 in
             mysqlrestore) cmd=mysql;     option="-i" ;;
         esac
         MYSQL_CONTAINER=`container_full_name mysql`
-        MYSQL_PASSWORD=`grep MYSQL_PASSWORD docker-compose.yml|cut -d= -f2`
-        docker exec $option $MYSQL_CONTAINER $cmd --user=redmine --password=$MYSQL_PASSWORD redmine
+        MYSQL_PASSWORD=`grep MYSQL_PASSWORD docker-compose.yml|cut -d= -f2|xargs`
+        if [ "$MYSQL_CONTAINER" = "" ] ; then 
+            echo "Démare le conteneur mysql" > /dev/stderr
+            docker-compose up -d mysql > /dev/stderr
+            sleep 3
+            MYSQL_CONTAINER=`container_full_name mysql`
+        fi
+        shift
+        docker exec $option $MYSQL_CONTAINER $cmd --user=redmine --password="$MYSQL_PASSWORD" redmine "$@"
         ;;
     build|config|create|down|events|exec|kill|logs|pause|port|ps|pull|restart|rm|run|start|stop|unpause|up)
-        docker-compose $*
+        docker-compose "$@"
         ;;
     *)
         cat <<HELP
