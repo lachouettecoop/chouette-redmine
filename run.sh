@@ -82,12 +82,19 @@ case $1 in
     bash)
         dc_exec_or_run redmine "$@"
         ;;
-    mysql|mysqldump|mysqlrestore)
-        case $1 in
-            mysql)        cmd=mysql;     option="-it";;
-            mysqldump)    cmd=mysqldump; option=     ;;
-            mysqlrestore) cmd=mysql;     option="-i" ;;
-        esac
+    mysql|mysqldump)
+        cmd=$1
+        shift
+        if [ "$cmd" = "mysql" ] ; then
+            # check if input file descriptor (0) is a terminal
+            if [ -t 0 ] ; then
+                option="-it";
+            else
+                option="-i";
+            fi
+        else
+            option="";
+        fi
         MYSQL_CONTAINER=`container_full_name mysql`
         MYSQL_PASSWORD=`grep MYSQL_PASSWORD docker-compose.yml|cut -d= -f2|xargs`
         if [ "$MYSQL_CONTAINER" = "" ] ; then 
@@ -96,7 +103,6 @@ case $1 in
             sleep 3
             MYSQL_CONTAINER=`container_full_name mysql`
         fi
-        shift
         docker exec $option $MYSQL_CONTAINER $cmd --user=redmine --password="$MYSQL_PASSWORD" redmine "$@"
         ;;
     build|config|create|down|events|exec|kill|logs|pause|port|ps|pull|restart|rm|run|start|stop|unpause|up)
@@ -111,9 +117,8 @@ Utilisation : $0 [COMMANDE]
   update       : a exécuter après une mise à jour
   prune        : efface les conteneurs et images Docker inutilisés
   bash         : lance bash sur le conteneur redmine
-  mysql        : lance mysql sur le conteneur mysql, en mode interactif
+  mysql        : lance mysql sur le conteneur mysql
   mysqldump    : lance mysqldump sur le conteneur mysql
-  mysqlrestore : permet de rediriger un dump vers la commande mysql
   stop         : stoppe les conteneurs
   rm           : efface les conteneurs
   logs         : affiche les logs des conteneurs
