@@ -74,10 +74,13 @@ RUN cd /usr/src/redmine/ \
     && patch -p1 -E < project-hierarchy-jump-to-wiki.patch 
 
 # Installation du plugin issuecloser (redmine_issue_closer)
+# Pour lequel on supprime la contrainte "is_closed=false" dans
+# la sélection du status source.
 RUN cd /usr/src/redmine/plugins/ \
     && git clone "https://github.com/isheninp/redmine_issue_closer.git" issuecloser \
     && cd issuecloser \
     && git checkout c359c004f19e706a70fd694870354b7ba2827e17 \
+    && sed -i "s/.where('is_closed=false')/.all/" app/views/settings/_issuecloser.html.erb \
     && echo "" >> Gemfile \
     && echo "source 'https://rubygems.org'" >> Gemfile \
     && (bundle check || bundle install)
