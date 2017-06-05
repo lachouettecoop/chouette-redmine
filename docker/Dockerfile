@@ -65,7 +65,6 @@ RUN cd /usr/src/redmine/plugins/ \
 # seront stockées dans le répertore /usr/src/redmine/public/system/rich"]
 VOLUME ["/usr/src/redmine/public/system/rich"]
 
-
 # Apply patch so that:
 # - default / page will list projects
 # - listed project links will jump to their wiki page
@@ -73,4 +72,13 @@ COPY home-to-project-index.patch project-hierarchy-jump-to-wiki.patch /usr/src/r
 RUN cd /usr/src/redmine/ \
     && patch -p1 -E < home-to-project-index.patch \
     && patch -p1 -E < project-hierarchy-jump-to-wiki.patch 
+
+# Installation du plugin issuecloser (redmine_issue_closer)
+RUN cd /usr/src/redmine/plugins/ \
+    && git clone "https://github.com/isheninp/redmine_issue_closer.git" issuecloser \
+    && cd issuecloser \
+    && git checkout c359c004f19e706a70fd694870354b7ba2827e17 \
+    && echo "" >> Gemfile \
+    && echo "source 'https://rubygems.org'" >> Gemfile \
+    && (bundle check || bundle install)
 
