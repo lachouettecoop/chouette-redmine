@@ -38,15 +38,43 @@ function dc_exec_or_run() {
 
 case $1 in
     "")
+        test -e docker-compose.yml || $0 init
+        test -e data/redmine/configuration.yml || $0 init
         docker-compose up -d
+        echo "sleep 4s"
+        sleep 4
+        echo "db:migrate, plugin:migrate"
+        docker exec `container_full_name redmine` bash -c "RAILS_ENV=production bundle exec rake db:migrate redmine:plugins:migrate"
         ;;
+
     init)
         test -e docker-compose.yml || cp docker-compose.yml.dist docker-compose.yml
         test -e data/redmine/configuration.yml \
             || cp data/redmine/configuration.yml.dist data/redmine/configuration.yml
         docker-compose run --rm mysql chown -R mysql:mysql /var/lib/mysql
         docker-compose run --rm redmine chown -R redmine:redmine log files public/system/rich
+
+        # Create cron daily job for issuecloser:close_tasks
+        run_realpath=`realpath $0`
+        run_dirname=`dirname $run_realpath | xargs basename`
+        cronfile=/etc/cron.daily/${run_dirname}-issuecloser
+        echo "Write $cronfile"
+        cat >"$cronfile" << EOCRONFILE
+#!/bin/sh
+# File automatically created by
+# $run_realpath init
+$run_realpath issuecloser
+EOCRONFILE
+        chmod a+rx "$cronfile"
         ;;
+
+    issuecloser)
+        REDMINE_CONTAINER=`container_full_name redmine`
+        if [ -n "$REDMINE_CONTAINER" ] ; then
+          docker exec $REDMINE_CONTAINER bash -c "RAILS_ENV=production bundle exec rake issuecloser:close_tasks"
+        fi
+        ;;
+
     upgrade)
         read -rp "Êtes-vous sûr de vouloir effacer et mettre à jour les images et conteneurs Docker ? (o/n) "
         if [[ $REPLY =~ ^[oO]$ ]] ; then
@@ -60,6 +88,7 @@ case $1 in
             $0 update
         fi
         ;;
+
     update)
         $0 init
         $0
@@ -68,6 +97,7 @@ case $1 in
         dc_exec_or_run redmine plugins/post-install.sh
         $0
         ;;
+
     prune)
         read -rp "Êtes-vous sûr de vouloir effacer les conteneurs et images Docker innutilisés ? (o/n)"
         if [[ $REPLY =~ ^[oO]$ ]] ; then
@@ -79,9 +109,11 @@ case $1 in
             test "$dangling_images" != "" && docker rmi $dangling_images
         fi
         ;;
+
     bash)
         dc_exec_or_run redmine "$@"
         ;;
+
     mysql|mysqldump)
         cmd=$1
         shift
@@ -105,14 +137,17 @@ case $1 in
         fi
         docker exec $option $MYSQL_CONTAINER $cmd --user=redmine --password="$MYSQL_PASSWORD" redmine "$@"
         ;;
+
     build|config|create|down|events|exec|kill|logs|pause|port|ps|pull|restart|rm|run|start|stop|unpause|up)
         docker-compose "$@"
         ;;
+
     *)
         cat <<HELP
 Utilisation : $0 [COMMANDE]
   init         : initialise les données
                : lance les conteneurs
+  issuecloser  : issuecloser:close_tasks, a éxécuter tous les jours par un job cron
   upgrade      : met à jour les images et les conteneurs Docker
   update       : a exécuter après une mise à jour
   prune        : efface les conteneurs et images Docker inutilisés
@@ -124,5 +159,6 @@ Utilisation : $0 [COMMANDE]
   logs         : affiche les logs des conteneurs
 HELP
         ;;
+
 esac
 
