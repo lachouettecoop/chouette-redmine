@@ -1,5 +1,21 @@
 @import url(../../../stylesheets/application.css);
 
+/**********************************************************/
+/* responsive.css override */
+/**********************************************************/
+
+#wrapper #header {
+    background-color: #111;
+}
+
+#wrapper .flyout-menu {
+    background-color: #29333a;
+}
+#wrapper .flyout-menu h3 {
+    background-color: #49535a;
+}
+
+
 /* Circle Theme version 1.0.2, Copyright (C) 2014 Kirill Bezrukov www.redminecrm.com */
 
 /**********************************************************/
