@@ -138,6 +138,13 @@ EOCRONFILE
         docker exec $option $MYSQL_CONTAINER $cmd --user=redmine --password="$MYSQL_PASSWORD" redmine "$@"
         ;;
 
+    dumpall)
+        shift
+        MYSQL_CONTAINER=`container_full_name mysql`
+        MYSQL_PASSWORD=`grep MYSQL_ROOT_PASSWORD docker-compose.yml|cut -d= -f2|xargs`
+        docker exec $MYSQL_CONTAINER mysqldump --user=root --password="$MYSQL_PASSWORD" --all-databases "$@"
+        ;;
+
     build|config|create|down|events|exec|kill|logs|pause|port|ps|pull|restart|rm|run|start|stop|unpause|up)
         docker-compose "$@"
         ;;
@@ -153,7 +160,8 @@ Utilisation : $0 [COMMANDE]
   prune        : efface les conteneurs et images Docker inutilisés
   bash         : lance bash sur le conteneur redmine
   mysql        : lance mysql sur le conteneur mysql
-  mysqldump    : lance mysqldump sur le conteneur mysql
+  mysqldump    : lance mysqldump redmine sur le conteneur mysql
+  dumpall      : lance mysqldump --all-databases
   stop         : stoppe les conteneurs
   rm           : efface les conteneurs
   logs         : affiche les logs des conteneurs
