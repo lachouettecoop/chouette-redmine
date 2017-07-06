@@ -1,4 +1,4 @@
-FROM redmine:3.3.3-passenger
+FROM redmine:3.3.4-passenger
 
 # Permettre au module Apache passenger de compiler sa lib native,
 # dans le répertoire /home/redmine:
