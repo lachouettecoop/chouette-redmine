@@ -1,12 +1,13 @@
 diff -uwr a/app/helpers/projects_helper.rb b/app/helpers/projects_helper.rb
---- a/app/helpers/projects_helper.rb	2017-04-06 15:38:29.217504909 +0200
-+++ b/app/helpers/projects_helper.rb	2017-04-06 15:45:01.145247542 +0200
-@@ -64,7 +64,7 @@
+--- a/app/helpers/projects_helper.rb	2017-07-22 18:39:03.474597138 +0000
++++ b/app/helpers/projects_helper.rb	2017-07-22 18:39:48.342598984 +0000
+@@ -58,7 +58,7 @@
    # Renders the projects index
    def render_project_hierarchy(projects)
      render_project_nested_lists(projects) do |project|
--      s = link_to_project(project, {}, :class => "#{project.css_classes} #{User.current.member_of?(project) ? 'my-project' : nil}")
-+      s = link_to_project(project, { :jump => "wiki" }, :class => "#{project.css_classes} #{User.current.member_of?(project) ? 'my-project' : nil}")
+-      s = link_to_project(project, {}, :class => "#{project.css_classes} #{User.current.member_of?(project) ? 'icon icon-fav my-project' : nil}")
++      s = link_to_project(project, { :jump => "wiki" }, :class => "#{project.css_classes} #{User.current.member_of?(project) ? 'icon icon-fav my-project' : nil}")
        if project.description.present?
          s << content_tag('div', textilizable(project.short_description, :project => project), :class => 'wiki description')
        end
+

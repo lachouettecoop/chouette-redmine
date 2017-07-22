@@ -41,10 +41,6 @@ case $1 in
         test -e docker-compose.yml || $0 init
         test -e data/redmine/configuration.yml || $0 init
         docker-compose up -d
-        echo "sleep 4s"
-        sleep 4
-        echo "db:migrate, plugin:migrate"
-        docker exec `container_full_name redmine` bash -c "RAILS_ENV=production bundle exec rake db:migrate redmine:plugins:migrate"
         ;;
 
     init)
@@ -110,7 +106,7 @@ EOCRONFILE
         fi
         ;;
 
-    bash)
+    bash|rails|rake|passenger)
         dc_exec_or_run redmine "$@"
         ;;
 

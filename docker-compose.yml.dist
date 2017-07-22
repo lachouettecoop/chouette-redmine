@@ -32,5 +32,6 @@ redmine:
     - mysql
   environment:
     - VIRTUAL_HOST=gestion.lachouettecoop.test
+    - REDMINE_PLUGINS_MIGRATE=1
   volumes_from:
     - data

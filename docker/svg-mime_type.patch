@@ -1,0 +1,11 @@
+diff -uwr a/lib/redmine/mime_type.rb b/lib/redmine/mime_type.rb
+--- a/lib/redmine/mime_type.rb	2017-07-22 19:08:14.262669161 +0000
++++ b/lib/redmine/mime_type.rb	2017-07-22 19:10:25.206674548 +0000
+@@ -42,6 +42,7 @@
+       'image/gif' => 'gif',
+       'image/jpeg' => 'jpg,jpeg,jpe',
+       'image/png' => 'png',
++      'image/svg+xml'=> 'svg',
+       'image/tiff' => 'tiff,tif',
+       'image/x-ms-bmp' => 'bmp',
+       'application/javascript' => 'js',
