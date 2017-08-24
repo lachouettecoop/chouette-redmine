@@ -49,8 +49,8 @@ RUN cd /usr/src/redmine/plugins/ \
 # Configuration du plugin CKEditor:
 #     Skin: moono-modifie
 RUN cd /usr/src/redmine/plugins/ \
-    && (wget -q -O - "https://github.com/a-ono/redmine_ckeditor/archive/1.1.4.tar.gz" | tar zx) \
-    && mv redmine_ckeditor-1.1.4 redmine_ckeditor \
+    && (wget -q -O - "https://github.com/a-ono/redmine_ckeditor/archive/1.1.5.tar.gz" | tar zx) \
+    && mv redmine_ckeditor-1.1.5 redmine_ckeditor \
     && cd redmine_ckeditor \
     && sed -i "s/.*sprockets-rails.*/source 'https:\/\/rubygems.org'/" Gemfile \
     && apt-get update \
@@ -71,6 +71,25 @@ RUN cd /usr/src/redmine/plugins/ \
     && sed -i "s/.where('is_closed=false')/.all/" app/views/settings/_issuecloser.html.erb \
     && echo "" >> Gemfile \
     && echo "source 'https://rubygems.org'" >> Gemfile
+
+# Installation du plugin Redmine Lightbox 2
+# This plugin lets you preview image, pdf and swf attachments in a lightbox.
+RUN cd /usr/src/redmine/plugins/ \
+    && lightbox_version=0.4.3 \
+    && (wget -q -O - "https://github.com/paginagmbh/redmine_lightbox2/archive/v${lightbox_version}.tar.gz" | tar zx) \
+    && mv redmine_lightbox2-${lightbox_version} redmine_lightbox2
+
+# Installation du plugin Redmine Dashboard 2
+RUN cd /usr/src/redmine/plugins/ \
+    && dashboard_version=4c130e3883ca9bf909d519d5d29bd3a0a2a89201 \
+    && (wget -q -O - "https://github.com/jgraichen/redmine_dashboard/archive/${dashboard_version}.tar.gz" | tar zx) \
+    && mv redmine_dashboard-${dashboard_version} redmine_dashboard
+
+## Installation du plugin redmine_pretend
+#RUN cd /usr/src/redmine/plugins/ \
+#    && redmine_pretend_version=6046e195bb58311ccf5725272162a3a5033afd5f \
+#    && (wget -q -O - "https://github.com/batizhevsky/redmine_pretend/archive/${redmine_pretend_version}.tar.gz" | tar zx) \
+#    && mv redmine_pretend-${redmine_pretend_version} redmine_pretend
 
 # Installation des dépendances (bundle Gemfile)
 # Supprimme le fichier Gemfile.lock et commence par
