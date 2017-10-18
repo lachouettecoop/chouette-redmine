@@ -1,4 +1,4 @@
-FROM redmine:3.4.2-passenger
+FROM redmine:3.4.3-passenger
 
 # Permettre au module Apache passenger de compiler sa lib native,
 # dans le répertoire /home/redmine:
@@ -28,14 +28,15 @@ RUN cd /usr/src/redmine/plugins/ \
 # Installation du plugin redmine_multiprojects_issue
 # https://github.com/nanego/redmine_multiprojects_issue
 RUN cd /usr/src/redmine/plugins/ \
-    && (wget -q -O - "https://github.com/nanego/redmine_multiprojects_issue/archive/v3.3.0.tar.gz" | tar zx) \
-    && mv redmine_multiprojects_issue-3.3.0 redmine_multiprojects_issue
+    && multiprojects_issue_version=dd8dfc83791400535dc4232b73ada40a5a746f19 \
+    && (wget -q -O - "https://github.com/nanego/redmine_multiprojects_issue/archive/${multiprojects_issue_version}.tar.gz" | tar zx) \
+    && mv redmine_multiprojects_issue-${multiprojects_issue_version} redmine_multiprojects_issue
 
 # Installation du plugin scrum (backlog, sprint)
 # http://www.redmine.org/plugins/scrum-plugin
 # sed pour changer les couleurs en plus claire et rendre le texte plus lisible.
 RUN cd /usr/src/redmine/plugins/ \
-    && (wget -q -O - "https://redmine.ociotec.com/attachments/download/470/scrum-v0.17.0.tar.gz" | tar zx) \
+    && (wget -q -O - "https://redmine.ociotec.com/attachments/download/476/scrum-v0.18.0.tar.gz" | tar zx) \
     && sed -i -e "s/#F7D6FF/#FAEAFF/g" -e "s/#E9B1FF/#F0D1FF/g" -e "s/#C4FFCA/#E2FFE5/g" -e "s/#9CFFA4/#CEFFD2/g" -e "s/#C8E7FF/#E4F3FF/g" -e "s/#A3BFD7/#D1DFEB/g" -e "s/#FFCCF3/#FFE6F9/g" -e "s/#FFA4E5/#FFD2F2/g" scrum/assets/stylesheets/scrum.css
 
 # Installation du plugin ckeditor pour avoir un éditeur WYSIWIG
@@ -79,9 +80,9 @@ RUN cd /usr/src/redmine/plugins/ \
     && (wget -q -O - "https://github.com/paginagmbh/redmine_lightbox2/archive/v${lightbox_version}.tar.gz" | tar zx) \
     && mv redmine_lightbox2-${lightbox_version} redmine_lightbox2
 
-# Installation du plugin Redmine Dashboard 2
+# Installation du plugin Redmine Dashboard 2 (stable-v2 branch)
 RUN cd /usr/src/redmine/plugins/ \
-    && dashboard_version=4c130e3883ca9bf909d519d5d29bd3a0a2a89201 \
+    && dashboard_version=05a13540d85faa1fd6c93df55393206ea0d76cb1 \
     && (wget -q -O - "https://github.com/jgraichen/redmine_dashboard/archive/${dashboard_version}.tar.gz" | tar zx) \
     && mv redmine_dashboard-${dashboard_version} redmine_dashboard
 
@@ -113,7 +114,6 @@ RUN set +x \
 COPY home-to-project-index.patch \
      project-hierarchy-jump-to-wiki.patch \
      svg-mime_type.patch \
-     scrum_plugin-issue_1381.patch \
      /usr/src/redmine/
 RUN cd /usr/src/redmine/ \
     && for p in *.patch ; do \
