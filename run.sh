@@ -5,8 +5,8 @@ cd `dirname $0`
 
 function container_full_name() {
     # Retourne le nom complet du coneneur $1 si il est en cours d'exécution
-    # workaround for docker-compose ps: https://github.com/docker/compose/issues/1513
-    ids=$(docker-compose ps -q)
+    # workaround for /usr/local/bin/docker-compose ps: https://github.com/docker/compose/issues/1513
+    ids=$(/usr/local/bin/docker-compose ps -q)
     if [ "$ids" != "" ] ; then
         echo `docker inspect -f '{{if .State.Running}}{{.Name}}{{end}}' $ids \
               | cut -d/ -f2 | grep -E "_${1}_[0-9]"`
@@ -32,7 +32,7 @@ function dc_exec_or_run() {
         docker exec -it $CONTAINER_FULL_NAME "$@"
     else
         # container not started
-        docker-compose run --rm $CONTAINER_SHORT_NAME "$@"
+        /usr/local/bin/docker-compose run --rm $CONTAINER_SHORT_NAME "$@"
     fi
 }
 
@@ -40,15 +40,15 @@ case $1 in
     "")
         test -e docker-compose.yml || $0 init
         test -e data/redmine/configuration.yml || $0 init
-        docker-compose up -d
+        /usr/local/bin/docker-compose up -d
         ;;
 
     init)
         test -e docker-compose.yml || cp docker-compose.yml.dist docker-compose.yml
         test -e data/redmine/configuration.yml \
             || cp data/redmine/configuration.yml.dist data/redmine/configuration.yml
-        docker-compose run --rm mysql chown -R mysql:mysql /var/lib/mysql
-        docker-compose run --rm redmine chown -R redmine:redmine log files public/system/rich
+        /usr/local/bin/docker-compose run --rm mysql chown -R mysql:mysql /var/lib/mysql
+        /usr/local/bin/docker-compose run --rm redmine chown -R redmine:redmine log files public/system/rich
 
         # Create cron daily job for issuecloser:close_tasks
         run_realpath=`realpath $0`
@@ -74,13 +74,13 @@ EOCRONFILE
     upgrade)
         read -rp "Êtes-vous sûr de vouloir effacer et mettre à jour les images et conteneurs Docker ? (o/n) "
         if [[ $REPLY =~ ^[oO]$ ]] ; then
-            docker-compose pull
+            /usr/local/bin/docker-compose pull
             for image in `dc_dockerfiles_images`; do
                 docker pull $image
             done
-            docker-compose build
-            docker-compose stop
-            docker-compose rm -f
+            /usr/local/bin/docker-compose build
+            /usr/local/bin/docker-compose stop
+            /usr/local/bin/docker-compose rm -f
             $0 update
         fi
         ;;
@@ -127,7 +127,7 @@ EOCRONFILE
         MYSQL_PASSWORD=`grep MYSQL_PASSWORD docker-compose.yml|cut -d= -f2|xargs`
         if [ "$MYSQL_CONTAINER" = "" ] ; then 
             echo "Démare le conteneur mysql" > /dev/stderr
-            docker-compose up -d mysql > /dev/stderr
+            /usr/local/bin/docker-compose up -d mysql > /dev/stderr
             sleep 3
             MYSQL_CONTAINER=`container_full_name mysql`
         fi
@@ -149,7 +149,7 @@ EOCRONFILE
         ;;
 
     build|config|create|down|events|exec|kill|logs|pause|port|ps|pull|restart|rm|run|start|stop|unpause|up)
-        docker-compose "$@"
+        /usr/local/bin/docker-compose "$@"
         ;;
 
     *)
